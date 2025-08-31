@@ -30,6 +30,14 @@ uuid = { version = "1.0", features = ["v4", "serde"] }
 portable-pty = "0.8"
 regex = "1.10"
 reqwest = { version = "0.12", features = ["json", "rustls-tls"] }
+base64 = "0.22"
+sha2 = "0.10"
+chrono = { version = "0.4", features = ["serde"] }
+num_cpus = "1.0"
+gethostname = "0.4"
+notify = "6.1"
+arboard = "3.3"
+libc = "0.2"
 
 [target.'cfg(windows)'.dependencies]
 winapi = { version = "0.3", features = ["consoleapi", "processenv", "wincon", "handleapi", "fileapi"] }

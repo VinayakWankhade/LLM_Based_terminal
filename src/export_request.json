@@ -1,0 +1,11 @@
+{
+  "mcqs": [
+    {
+      "question": "What is Photosynthesis?",
+      "options": ["a process used by plants and other organisms to convert light energy into chemical energy", "nitrification", "pyrochemical process", "inversion"],
+      "answer": "a process used by plants and other organisms to convert light energy into chemical energy",
+      "difficulty": "Easy"
+    }
+  ],
+  "format": "csv"
+}

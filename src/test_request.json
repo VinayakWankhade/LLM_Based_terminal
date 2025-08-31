@@ -1,0 +1,6 @@
+{
+  "text": "Photosynthesis is a process used by plants and other organisms to convert light energy into chemical energy. Chlorophyll is the green pigment that captures light energy. The process occurs in chloroplasts, which are organelles found in plant cells. During photosynthesis, carbon dioxide and water are converted into glucose and oxygen. The chemical equation for photosynthesis is 6CO2 + 6H2O + light energy → C6H12O6 + 6O2.",
+  "num_questions": 5,
+  "use_transformers": false,
+  "target_mix": {"easy": 0.4, "medium": 0.4, "hard": 0.2}
+}

@@ -225,6 +225,9 @@ impl Terminal {
             }
             AnsiCommand::Unknown(seq) => {
                 log::warn!("Unknown escape sequence: {}", seq);
+            },
+            _ => {
+                // Handle other ANSI commands
             }
         }
     }

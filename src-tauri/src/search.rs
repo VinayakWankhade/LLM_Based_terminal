@@ -8,6 +8,7 @@ pub struct ScrollMatch {
     pub start: usize,
     pub end: usize,
     pub line: String,
+    pub line_content: String,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -82,7 +83,7 @@ impl ScrollbackIndex {
                         let start = m.start();
                         let end = m.end();
                         last_index = end.max(last_index);
-                        results.push(ScrollMatch { line_index: i, start, end, line: line.clone() });
+                        results.push(ScrollMatch { line_index: i, start, end, line: line.clone(), line_content: line.clone() });
                         if results.len() >= limit { return results; }
                         if start == end { // avoid zero-length loops
                             last_index += 1;
@@ -99,7 +100,7 @@ impl ScrollbackIndex {
                     if let Some(pos) = hay[idx..].find(&needle) {
                         let start = idx + pos;
                         let end = start + needle.len();
-                        results.push(ScrollMatch { line_index: i, start, end, line: line.clone() });
+                        results.push(ScrollMatch { line_index: i, start, end, line: line.clone(), line_content: line.clone() });
                         if results.len() >= limit { return results; }
                         idx = end.max(idx + 1);
                     } else {

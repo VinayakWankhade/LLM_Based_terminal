@@ -63,16 +63,25 @@ const Terminal: React.FC<TerminalProps> = ({ terminalId, isVisible }) => {
   const isTauri = () => {
     try { return typeof window !== 'undefined' && (('__TAURI__' in (window as any)) || ('__TAURI_INTERNALS__' in (window as any))); } catch { return false; }
   };
+  const [ipcReady, setIpcReady] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  
   const safeInvoke = <T=any>(cmd: string, payload?: any): Promise<T> => {
-    if (isTauri()) return invoke<T>(cmd as any, payload);
-    return Promise.reject(new Error('Not running under Tauri'));
+    if (!isTauri()) return Promise.reject(new Error('Not running under Tauri'));
+    return invoke<T>(cmd as any, payload).catch(error => {
+      console.warn(`IPC call failed for ${cmd}:`, error);
+      throw error;
+    });
   };
   const safeListen = async <T=any>(event: string, handler: (e: any) => void): Promise<() => void> => {
-    if (isTauri()) {
+    if (!isTauri()) return () => {};
+    try {
       const un = await listen<T>(event as any, handler as any);
       return un;
+    } catch (error) {
+      console.warn(`Event listener setup failed for ${event}:`, error);
+      return () => {};
     }
-    return () => {};
   };
   const toHex = (color: string) => {
     if (!color) return color;
@@ -101,6 +110,50 @@ const Terminal: React.FC<TerminalProps> = ({ terminalId, isVisible }) => {
       } catch {}
     }, 120);
   };
+
+  // Check IPC readiness on mount
+  useEffect(() => {
+    let mounted = true;
+    let retries = 0;
+    const maxRetries = 5;
+    
+    const checkIpcConnection = async () => {
+      if (!mounted) return;
+      
+      try {
+        // Try a simple backend call to test connectivity
+        await safeInvoke('list_terminals'); // Use existing list_terminals command
+        if (mounted) {
+          setIpcReady(true);
+          setRetryCount(0);
+        }
+      } catch (error) {
+        console.warn(`IPC connection attempt ${retries + 1}/${maxRetries} failed:`, error);
+        retries++;
+        setRetryCount(retries);
+        
+        if (retries < maxRetries && mounted) {
+          const backoffDelay = Math.min(1000 * Math.pow(2, retries), 10000);
+          setTimeout(checkIpcConnection, backoffDelay);
+        } else if (mounted) {
+          console.error('Failed to establish IPC connection after maximum retries');
+          // Continue anyway for offline development
+          setIpcReady(false);
+        }
+      }
+    };
+    
+    // Initial delay to allow backend to fully initialize
+    if (isTauri()) {
+      setTimeout(checkIpcConnection, 500);
+    } else {
+      setIpcReady(false); // Not in Tauri environment
+    }
+    
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   // Initialize xterm instance
   useEffect(() => {
@@ -365,6 +418,21 @@ const Terminal: React.FC<TerminalProps> = ({ terminalId, isVisible }) => {
 
   return (
     <div className="terminal-container">
+      {!ipcReady && isTauri() && retryCount > 0 && (
+        <div className="ipc-status" style={{ 
+          position: 'absolute', 
+          top: '8px', 
+          right: '8px', 
+          background: 'rgba(255, 165, 0, 0.9)', 
+          color: 'white', 
+          padding: '4px 8px', 
+          borderRadius: '4px', 
+          fontSize: '12px',
+          zIndex: 1000
+        }}>
+          Connecting to backend... (attempt {retryCount})
+        </div>
+      )}
       <div
         ref={containerRef}
         className="terminal-grid"

@@ -5,6 +5,7 @@ import PaneLayout, { PaneNode, SplitDirection } from './components/PaneLayout';
 import AIPanel from './components/AIPanel';
 import WorkflowsPanel from './components/WorkflowsPanel';
 import SettingsPanel from './components/SettingsPanel';
+import AdvancedFeatures from './components/AdvancedFeatures';
 
 function genId(prefix = 'pane') {
   return `${prefix}-${Math.random().toString(36).slice(2, 8)}-${Date.now().toString(36)}`;
@@ -64,6 +65,7 @@ function App() {
   const [showAIPanel, setShowAIPanel] = useState(false);
   const [showWorkflows, setShowWorkflows] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [settings, setSettings] = useState<any | null>(null);
 
   useEffect(() => {
@@ -122,6 +124,8 @@ function App() {
         if (matchKey(e, kb.split_vertical)) { e.preventDefault(); splitActivePane('vertical'); return; }
         if (matchKey(e, kb.split_horizontal)) { e.preventDefault(); splitActivePane('horizontal'); return; }
         if (matchKey(e, kb.close_pane)) { e.preventDefault(); closeActivePane(); return; }
+        // Ctrl+Shift+A for advanced features
+        if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) { e.preventDefault(); setShowAdvanced(true); return; }
       }
     };
     window.addEventListener('keydown', onKey);
@@ -310,6 +314,13 @@ function App() {
           >
             ⚙
           </button>
+          <button
+            className="terminal-control-btn"
+            onClick={() => setShowAdvanced(true)}
+            title="Advanced Features (Ctrl+Shift+A)"
+          >
+            🚀
+          </button>
           {activeTab && (
             <>
               <button
@@ -371,6 +382,14 @@ function App() {
           visible={showSettings}
           onClose={() => setShowSettings(false)}
           onSaved={(s) => { setSettings(s); applyAppearance(s); }}
+        />
+      )}
+
+      {showAdvanced && (
+        <AdvancedFeatures
+          terminalId={activeTab ? (findNode(activeTab.root, activeTab.activePaneId) as any)?.terminalId ?? '' : ''}
+          visible={showAdvanced}
+          onClose={() => setShowAdvanced(false)}
         />
       )}
     </div>
