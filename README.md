@@ -140,17 +140,6 @@ Manages terminal grid state, cursor positioning, and text rendering.
 ### Tauri Commands (`commands.rs`)
 Exposes backend functionality to the frontend through Tauri's IPC system.
 
-## 🎯 Current Status
-
-The terminal currently supports:
-- ✅ Basic terminal window with tabs
-- ✅ Process spawning (PowerShell on Windows)
-- ✅ Text output display
-- ✅ ANSI escape sequence parsing
-- ✅ Cursor positioning and movement
-- ✅ AI assistance panel with command suggestions
-- ✅ Multiple terminal sessions
-
 ## 🛣️ Roadmap
 
 1. **Enhanced PTY Implementation**
