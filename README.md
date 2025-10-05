@@ -1,4 +1,4 @@
-# Warp Terminal - Built from Scratch
+# Terminal - Built from Scratch
 
 A modern terminal emulator built with Rust, Tauri, and React, inspired by the original Warp terminal.
 
